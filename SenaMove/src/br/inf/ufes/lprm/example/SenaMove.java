@@ -82,7 +82,7 @@ public class SenaMove extends JFrame {
 		ArrayList numbersGenerated = new ArrayList();
 		for (int i = 0; i < 6; i++) {
 			Random randNumber = new Random();
-			int iNumber = randNumber.nextInt(48) + 1;
+			int iNumber = randNumber.nextInt(60) + 1;
 
 			if(!numbersGenerated.contains(iNumber)) {
 				numbersGenerated.add(iNumber);
@@ -102,57 +102,57 @@ public class SenaMove extends JFrame {
 	private float lastX, lastY, lastZ;
 	private static final int SHAKE_THRESHOLD = 600;
 
-	public static InetAddress enderecoIpHost = null;
+	public static InetAddress ipHostAddress = null;
 	public static void main(String[] args) {
 
-		List<Inet4Address> interfacesIpv4 = new ArrayList<Inet4Address>();
-		Enumeration listaInterfaces = null;
+		List<Inet4Address> ipv4Interfaces = new ArrayList<Inet4Address>();
+		Enumeration interfacesList = null;
 		try {
-			listaInterfaces = NetworkInterface.getNetworkInterfaces();
+			interfacesList = NetworkInterface.getNetworkInterfaces();
 		} catch (SocketException s) {
 			System.err.println("*Error to obtain network interfaces.");
 			s.printStackTrace();
 			System.exit(0);
 		}
-		while(listaInterfaces.hasMoreElements()){
-			NetworkInterface ni = (NetworkInterface)listaInterfaces.nextElement();
+		while(interfacesList.hasMoreElements()){
+			NetworkInterface ni = (NetworkInterface)interfacesList.nextElement();
 			Enumeration ee = ni.getInetAddresses();
 			while(ee.hasMoreElements()) {
 				try {
 					Inet4Address ia = (Inet4Address)ee.nextElement();
 					if (!ia.isLoopbackAddress())
-						interfacesIpv4.add(ia);
+						ipv4Interfaces.add(ia);
 				}
 				catch (Exception e){}
 			}
 		}
 
-		if (interfacesIpv4.size() > 1){
+		if (ipv4Interfaces.size() > 1){
 			System.out.println("*More than one interface was detected.");
 			int i = 1;
-			for (Inet4Address inet4Address : interfacesIpv4) {
+			for (Inet4Address inet4Address : ipv4Interfaces) {
 				System.out.println(i + " - " + inet4Address.getHostAddress());
 				i++;
 			}
 
 			System.out.println("*Enter number of interface:");
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-			int opcao = 99;
-			while (opcao >= i || opcao < 1 ){
+			int option = 99;
+			while (option >= i || option < 1 ){
 				try {
-					opcao = Integer.parseInt(buffer.readLine());
+					option = Integer.parseInt(buffer.readLine());
 				} catch (Exception e) {
 					System.err.println("*Error: invalid number.");
 				}
-				if (opcao >= 1 && opcao < i)
-					enderecoIpHost = interfacesIpv4.get(opcao-1);
+				if (option >= 1 && option < i)
+					ipHostAddress = ipv4Interfaces.get(option-1);
 				else
 					System.out.println(">>> Invalid option.");
 			}
 		}
 
-		if (enderecoIpHost == null)
-			enderecoIpHost = interfacesIpv4.get(0);
+		if (ipHostAddress == null)
+			ipHostAddress = ipv4Interfaces.get(0);
 
 		SenaMove senaMove = new SenaMove();
 
@@ -166,8 +166,8 @@ public class SenaMove extends JFrame {
 		}
 		DatagramSocket serverSocket;
 		try {
-			serverSocket = new DatagramSocket(12345,enderecoIpHost);
-			System.out.println("SERVER OPENED ON "+enderecoIpHost.getHostAddress());
+			serverSocket = new DatagramSocket(12345,ipHostAddress);
+			System.out.println("SERVER OPENED ON "+ipHostAddress.getHostAddress());
 			byte[] receiveData = new byte[1024];
 			while (true) {
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
